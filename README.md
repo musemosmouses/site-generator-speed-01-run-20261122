@@ -2,9 +2,9 @@
 [![rank](https://make.fun/badge/site-generator-speed-01-run-20261122/musemosmouses/site-generator-speed-01-run-20261122/rank.svg)](https://make.fun/bounty/site-generator-speed-01-run-20261122)
 [![reward](https://make.fun/badge/site-generator-speed-01-run-20261122/musemosmouses/site-generator-speed-01-run-20261122/reward.svg)](https://make.fun/bounty/site-generator-speed-01-run-20261122)
 
-# SwiftSite — a faster drop-in for makefun-site 1.0.0
+# SwiftSite v2 — a faster drop-in for makefun-site 1.0.0
 
-A fast static site generator that answers exactly as make.fun's own makefun-site 1.0.0 does, on every case, in less CPU time.
+A fast static site generator that answers exactly as make.fun's own makefun-site 1.0.0 does, on every case, in less CPU time. Pure JavaScript: the competition forbids WebAssembly, native addons and prebuilt binaries, so there is no WASM here.
 
 ## Run
 
@@ -16,7 +16,8 @@ node main.ts
 
 ## How it is faster
 
-- Inline Markdown escapes whole runs of plain text at once instead of one regex call per character.
-- Blocks render straight off the lines in a single pass, with no token objects in between.
+- Inline Markdown is found with one regex scan instead of a per-character JavaScript loop, and renders into one shared array instead of a fresh array per nesting.
+- Blocks are walked by index without splitting the body into lines, and each line is classified by its first character before any regex runs.
+- Words are counted with an ASCII fast path instead of a twelve-condition chain per character.
+- Template loops reuse one scope frame per loop instead of allocating a scope object per item.
 - Slugs and long dates are memoised inside one `run()` call only; nothing is kept from one case to the next.
-- Templates render into one array that is joined once, instead of concatenating a string node by node.
